@@ -31,7 +31,7 @@
 
 <script>
 import RecycleScroller from './RecycleScroller.vue'
-import { props, simpleArray } from './common'
+import { simpleArray } from './common'
 
 export default {
   name: 'DynamicScroller',
@@ -50,7 +50,21 @@ export default {
   },
 
   props: {
-    ...props,
+    items: {
+      type: Array,
+      required: true,
+    },
+
+    keyField: {
+      type: String,
+      default: 'id',
+    },
+
+    direction: {
+      type: String,
+      default: 'vertical',
+      validator: (value) => ['vertical', 'horizontal'].includes(value),
+    },
 
     minItemSize: {
       type: [Number, String],
@@ -173,7 +187,7 @@ export default {
     scrollToBottom () {
       if (this.$_scrollingToBottom) return
       this.$_scrollingToBottom = true
-      const el = this.$el
+      let el = this.pageMode ? this.$refs.scroller.getListenerTarget() : this.$el
       // Item is inserted to the DOM
       this.$nextTick(() => {
         // Item sizes are computed

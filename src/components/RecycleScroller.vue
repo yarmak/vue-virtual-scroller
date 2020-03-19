@@ -58,7 +58,7 @@ import { ResizeObserver } from 'vue-resize'
 import { ObserveVisibility } from 'vue-observe-visibility'
 import ScrollParent from 'scrollparent'
 import config from '../config'
-import { props, simpleArray } from './common'
+import { simpleArray } from './common'
 import { supportsPassive } from '../utils'
 
 let uid = 0
@@ -75,7 +75,21 @@ export default {
   },
 
   props: {
-    ...props,
+    items: {
+      type: Array,
+      required: true,
+    },
+
+    keyField: {
+      type: String,
+      default: 'id',
+    },
+
+    direction: {
+      type: String,
+      default: 'vertical',
+      validator: (value) => ['vertical', 'horizontal'].includes(value),
+    },
 
     itemSize: {
       type: Number,
@@ -544,10 +558,11 @@ export default {
     },
 
     scrollToPosition (position) {
+      let el = this.pageMode ? this.listenerTarget : this.el
       if (this.direction === 'vertical') {
-        this.$el.scrollTop = position
+        el.scrollTop = position
       } else {
-        this.$el.scrollLeft = position
+        el.scrollLeft = position
       }
     },
 
