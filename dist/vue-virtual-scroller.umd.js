@@ -1105,12 +1105,24 @@
         this.scrollToPosition(scroll);
       },
       scrollToPosition: function scrollToPosition(position) {
-        var el = this.pageMode ? this.listenerTarget : this.el;
+        var direction = this.direction === 'vertical' ? {
+          scroll: 'scrollTop',
+          start: 'top',
+          size: 'height'
+        } : {
+          scroll: 'scrollLeft',
+          start: 'left',
+          size: 'width'
+        };
 
-        if (this.direction === 'vertical') {
-          el.scrollTop = position;
-        } else {
-          el.scrollLeft = position;
+        if (this.pageMode) {
+          var viewportEl = scrollparent(this.$el); // HTML doesn't overflow like other elements
+
+          var scrollTop = viewportEl.tagName === 'HTML' ? 0 : viewportEl[direction.scroll];
+          var viewport = viewportEl.getBoundingClientRect();
+          var scroller = this.$el.getBoundingClientRect();
+          var scrollerPosition = scroller[direction.start] - viewport[direction.start];
+          viewportEl[direction.scroll] = position + scrollTop + scrollerPosition;
         }
       },
       itemsLimitError: function itemsLimitError() {
@@ -1978,7 +1990,7 @@
 
   var plugin$2 = {
     // eslint-disable-next-line no-undef
-    version: "1.0.10-fork-y.0.2",
+    version: "1.0.10-fork-y.0.3",
     install: function install(Vue, options) {
       var finalOptions = Object.assign({}, {
         installComponents: true,

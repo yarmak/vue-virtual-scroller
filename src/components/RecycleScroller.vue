@@ -587,11 +587,15 @@ export default {
     },
 
     scrollToPosition (position) {
-      const el = this.pageMode ? this.listenerTarget : this.el
-      if (this.direction === 'vertical') {
-        el.scrollTop = position
-      } else {
-        el.scrollLeft = position
+      const direction = this.direction === 'vertical' ? { scroll: 'scrollTop', start: 'top', size: 'height' } : { scroll: 'scrollLeft', start: 'left', size: 'width' }
+      if (this.pageMode) {
+        const viewportEl = ScrollParent(this.$el)
+        // HTML doesn't overflow like other elements
+        const scrollTop = viewportEl.tagName === 'HTML' ? 0 : viewportEl[direction.scroll]
+        const viewport = viewportEl.getBoundingClientRect()
+        const scroller = this.$el.getBoundingClientRect()
+        const scrollerPosition = scroller[direction.start] - viewport[direction.start]
+        viewportEl[direction.scroll] = position + scrollTop + scrollerPosition
       }
     },
 
